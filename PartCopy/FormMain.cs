@@ -58,6 +58,7 @@ namespace PartCopy
         {
             try
             {
+                Cursor.Current = Cursors.WaitCursor;
                 System.IO.FileStream fsr = new System.IO.FileStream(
                     txtSource.Text,
                     System.IO.FileMode.Open,
@@ -67,11 +68,19 @@ namespace PartCopy
                 int endbyte = (int)udEnd.Value;
                 int size = endbyte - startbyte;
 
+                if (size <= 0)
+                {
+                    MessageBox.Show("Size is zero or minus.",
+                        Application.ProductName,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
+
                 byte[] bs = new byte[size];
 
                 fsr.Read(bs, startbyte, size);
                 fsr.Close();
-
 
                 FileStream fsw = new FileStream(
                     txtDest.Text,
@@ -80,6 +89,8 @@ namespace PartCopy
 
                 fsw.Write(bs, startbyte, size);
                 fsw.Close();
+
+                UpdateTitle(size);
             }
             catch (Exception ex)
             {
@@ -88,6 +99,10 @@ namespace PartCopy
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+            }
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -95,7 +110,22 @@ namespace PartCopy
             this.Close();
         }
 
-  
+        string orgTitle;
+        private void FormMain_Load(object sender, EventArgs e)
+        {
+            orgTitle = this.Text;
+        }
+
+        private void UpdateTitle(int size)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(orgTitle);
+            sb.Append(" ");
+            sb.Append(size);
+            sb.Append(" bytes written");
+
+            this.Text = sb.ToString();
+        }
 
     }
 }
