@@ -1,0 +1,7 @@
+
+# /
+/*.suo
+
+# /PartCopy/
+/PartCopy/bin
+/PartCopy/obj
